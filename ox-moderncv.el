@@ -69,11 +69,11 @@
                      (headline . org-moderncv-headline))
                      
   :menu-entry
-    '(?C "Exporter au format CV"
+    '(?C "Exporter to  ModernCV"
        ((?L "As LaTeX buffer" cv-export-as-latex)
-	      (?l "En fichier LaTeX" cv-export-to-latex)
-	      (?p "En fichier PDF " cv-export-to-pdf)
-	      (?o "En fichier PDF et Ouvrir"
+	      (?l "As LaTeX file" cv-export-to-latex)
+	      (?p "As PDF file" cv-export-to-pdf)
+	      (?o "As PDF file and open"
 	          (lambda (a s v b)
 	            (if a (cv-export-to-pdf t s v b)
 		            (org-open-file (cv-export-to-pdf nil s v b)))))))                    
