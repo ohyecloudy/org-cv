@@ -66,7 +66,18 @@
     (:with-email nil "email" t t)
     )
   :translate-alist '((template . org-moderncv-template)
-                     (headline . org-moderncv-headline)))
+                     (headline . org-moderncv-headline))
+                     
+  :menu-entry
+    '(?C "Exporter au format CV"
+       ((?L "As LaTeX buffer" cv-export-as-latex)
+	      (?l "En fichier LaTeX" cv-export-to-latex)
+	      (?p "En fichier PDF " cv-export-to-pdf)
+	      (?o "En fichier PDF et Ouvrir"
+	          (lambda (a s v b)
+	            (if a (cv-export-to-pdf t s v b)
+		            (org-open-file (cv-export-to-pdf nil s v b)))))))                    
+)
 
 
 ;;;; Template
@@ -207,6 +218,124 @@ as a communication channel."
        ((equal environment "cventry")
         (org-moderncv--format-cventry headline contents info))
        ((org-export-with-backend 'latex headline contents info))))))
+
+
+;;;###autoload
+(defun cv-export-as-latex
+    (&optional async subtreep visible-only body-only ext-plist)
+  "Export current buffer as a ModernCv letter.
+
+If narrowing is active in the current buffer, only export its
+narrowed part.
+
+If a region is active, export that region.
+
+A non-nil optional argument ASYNC means the process should happen
+asynchronously.  The resulting buffer should be accessible
+through the `org-export-stack' interface.
+
+When optional argument SUBTREEP is non-nil, export the sub-tree
+at point, extracting information from the headline properties
+first.
+
+When optional argument VISIBLE-ONLY is non-nil, don't export
+contents of hidden elements.
+
+When optional argument BODY-ONLY is non-nil, only write content.
+
+EXT-PLIST, when provided, is a proeprty list with external
+parameters overriding Org default settings, but still inferior to
+file-local settings.
+
+Export is done in a buffer named \"*Org ModernCv*\".  It
+will be displayed if `org-export-show-temporary-export-buffer' is
+non-nil."
+  (interactive)
+  (let (cv-special-contents)
+    (org-export-to-buffer 'cv "*Org ModernCv*"
+      async subtreep visible-only body-only ext-plist
+      (lambda () (LaTeX-mode)))))
+
+;;;###autoload
+(defun cv-export-to-latex
+    (&optional async subtreep visible-only body-only ext-plist)
+  "Export current buffer as a ModernCv (tex).
+
+If narrowing is active in the current buffer, only export its
+narrowed part.
+
+If a region is active, export that region.
+
+A non-nil optional argument ASYNC means the process should happen
+asynchronously.  The resulting file should be accessible through
+the `org-export-stack' interface.
+
+When optional argument SUBTREEP is non-nil, export the sub-tree
+at point, extracting information from the headline properties
+first.
+
+When optional argument VISIBLE-ONLY is non-nil, don't export
+contents of hidden elements.
+
+When optional argument BODY-ONLY is non-nil, only write contents.
+
+EXT-PLIST, when provided, is a property list with external
+parameters overriding Org default settings, but still inferior to
+file-local settings.
+
+When optional argument PUB-DIR is set, use it as the publishing
+directory.
+
+Return output file's name."
+  (interactive)
+  (let ((outfile (org-export-output-file-name ".tex" subtreep))
+	(cv-special-contents))
+    (org-export-to-file 'moderncv outfile
+      async subtreep visible-only body-only ext-plist)))
+
+;;;###autoload
+(defun cv-export-to-pdf
+    (&optional async subtreep visible-only body-only ext-plist)
+  "Export current buffer as a moderncv (pdf).
+
+If narrowing is active in the current buffer, only export its
+narrowed part.
+
+If a region is active, export that region.
+
+A non-nil optional argument ASYNC means the process should happen
+asynchronously.  The resulting file should be accessible through
+the `org-export-stack' interface.
+
+When optional argument SUBTREEP is non-nil, export the sub-tree
+at point, extracting information from the headline properties
+first.
+
+When optional argument VISIBLE-ONLY is non-nil, don't export
+contents of hidden elements.
+
+When optional argument BODY-ONLY is non-nil, only write code
+between \"\\begin{letter}\" and \"\\end{letter}\".
+
+EXT-PLIST, when provided, is a property list with external
+parameters overriding Org default settings, but still inferior to
+file-local settings.
+
+Return PDF file's name."
+  (interactive)
+  (let ((file (org-export-output-file-name ".tex" subtreep))
+	(cv-special-contents))
+    (org-export-to-file 'moderncv file
+      async subtreep visible-only body-only ext-plist
+      (lambda (file) (org-latex-compile file)))))
+
+;;;###autoload
+(defun cv-export-to-pdf-and-open
+    (&optional async subtreep visible-only body-only ext-plist)
+  (interactive)
+
+    (org-open-file (cv-export-to-pdf async subtreep visible-only body-only ext-plist)))
+
 
 (provide 'ox-moderncv)
 ;;; ox-moderncv ends here
