@@ -40,8 +40,10 @@ today => today"
              (dte (org-parse-time-string date_str))
              (month (nth 4 dte))
              (year (nth 5 dte))) ;;'(02 07 2015)))
+        ;; (concat
+        ;;  (calendar-month-name month abbreviate) " " (number-to-string year)))
         (concat
-         (calendar-month-name month abbreviate) " " (number-to-string year)))
+         (number-to-string year) "년 " (number-to-string month) "월"))
     date_str))
 
 (defun org-cv-utils--format-time-window (from-date to-date)
