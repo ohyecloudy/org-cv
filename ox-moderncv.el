@@ -170,17 +170,8 @@ holding export options."
             (format-spec template spec)))
      ;; Document start.
      "\\begin{document}\n\n"
-     ;; Title command.
-     (let* ((title-command (plist-get info :latex-title-command))
-            (command (and (stringp title-command)
-                          (format-spec title-command spec))))
-       (org-element-normalize-string
-        (cond ((not (plist-get info :with-title)) nil)
-              ((string= "" title) nil)
-              ((not (stringp command)) nil)
-              ((string-match "\\(?:[^%]\\|^\\)%s" command)
-               (format command title))
-              (t command))))
+     ;; Title command (moderncv)
+     "\\makecvtitle\n"
      ;; Document's body.
      contents
      ;; Creator.
